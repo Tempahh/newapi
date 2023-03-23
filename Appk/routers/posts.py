@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from database import get_db
 from typing import List
 from . import auth01
+from typing import Optional
+
 
 router = APIRouter(
     prefix="/posts",
@@ -11,12 +13,9 @@ router = APIRouter(
 )
 
 @router.get("/", response_model= List[schema.postty])
-def test_posts(db: Session = Depends(get_db), cur_user: int = Depends(auth01.get_user)):
-    posts = db.query(models.media).filter(
-        models.media.owner_id == cur_user.id).all()  # type: ignore
+def test_posts(db: Session = Depends(get_db), limit: int = 10, skip: int= 0, search: Optional[str]= ""):
+    posts = db.query(models.media).filter(models.media.title.contains(search)).limit(limit).offset(skip).all()
     return posts
-
-
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schema.postty)

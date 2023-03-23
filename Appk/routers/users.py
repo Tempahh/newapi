@@ -24,7 +24,14 @@ def create_user(user: schema.usercreate,
     
     return new_user
 
-@router.get("/{id}", response_model=schema.userout)
+@router.get("/", response_model=list[schema.userout])
+def get_user_OP(db: Session = Depends(get_db)):
+    user = db.query(models.User).all()
+    
+    
+    return user
+
+router.get("/{id}", response_model=schema.userout)
 def get_user(id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == id).first()
     
