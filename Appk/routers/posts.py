@@ -19,14 +19,20 @@ def test_posts(db: Session = Depends(get_db)):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schema.postty)
-def create_post(post: schema.PostCreate, db: Session = Depends(get_db), cur_user: int = Depends(auth01.get_user)):
-    print(cur_user)
-    new_post = models.media(**post.dict(exclude_unset=True))
+def create_posts(post: schema.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(auth01.get_user)):
+    # cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
+    #                (post.title, post.content, post.published))
+    # new_post = cursor.fetchone()
+
+    # conn.commit()
+
+    new_post = models.media(owner_id=current_user.id, **post.dict())
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
-    
-    return schema.postty.from_orm(new_post)
+
+    return new_post
+
 
 
 
