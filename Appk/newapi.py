@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from models import *
 from routers import posts, users, auth0
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 #models.Base.metadata.create_all(bind=engine)
 

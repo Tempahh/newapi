@@ -1,19 +1,16 @@
-from pydantic import BaseSettings
-from sqlalchemy import INTEGER
+import os
+from dotenv import load_dotenv
 
-class Settings(BaseSettings):
-    database_hostname= str
-    database_Port= str
-    database_password= str
-    database_name= str
-    database_username= str
-    secret_key= str
-    algorithm= str
-    access_token_expire_minutes= INTEGER
+load_dotenv()
 
-    class Config:
-        env_file = ".env"
+class Settings:
+    database_hostname = os.getenv("database_hostname")
+    database_port = os.getenv("database_port")
+    database_password = os.getenv("database_password")
+    database_name = os.getenv("database_name")
+    database_username = os.getenv("database_username")
+    secret_key = os.getenv("secret_key")
+    algorithm = os.getenv("algorithm")
+    access_token_expire_minutes = os.getenv("access_token_expire_minutes")
 
-   
-    
-settings = Settings() 
+settings = Settings
