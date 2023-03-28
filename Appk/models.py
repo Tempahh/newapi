@@ -28,3 +28,9 @@ class User(Base):
     created_at = Column(TIMESTAMP(timezone=True),
                         nullable= False, server_default=text('now()'))
     
+    
+class vote(Base):
+    __tablename__ = "votes"
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"),primary_key=True)
+    media_id = Column(Integer, ForeignKey("media.id", ondelete="CASCADE"), primary_key=True)
+    

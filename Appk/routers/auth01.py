@@ -3,33 +3,32 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional
 from sqlalchemy.orm import Session
-
-import schema
-import database
-import models
+import schema, database, models
 from fastapi.security import OAuth2PasswordBearer
-
+from config import settings
 
 auth_scheme = OAuth2PasswordBearer(tokenUrl='login')
-Secret_key = 'vnvbsmfhefemndw'
-ALGORITHM = 'HS256'
-Access_token = 30
 
+
+
+Secret_key = settings.secret_key
+ALGORITHM = settings.algorithm
+access_token_expire_minutes_int= (int(settings.access_token_expire_minutes)) # type: ignore
 
 def create_access_token(data: dict):
     to_encode = data.copy()
     
-    expire = datetime.utcnow() + timedelta(minutes=Access_token)
+    expire = datetime.utcnow() + timedelta(minutes=access_token_expire_minutes_int)
     to_encode.update({'exp': expire})
     
-    encoded_jwt = jwt.encode(to_encode, Secret_key, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, Secret_key, algorithm=ALGORITHM)# type: ignore
     
     return encoded_jwt
 
 
 def verify_access_token(token: str, cred_exception):
     try:
-        payload = jwt.decode(token, Secret_key, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, Secret_key, algorithms=[ALGORITHM]) # type: ignore
         id: Optional[str] = payload.get('user_id')
         if id is None:
             raise cred_exception

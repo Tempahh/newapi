@@ -1,12 +1,15 @@
 from fastapi import FastAPI
-from models import *
+from database import engine
+import models
 from routers import posts, users, auth0
 from dotenv import load_dotenv
 
 
+models.Base.metadata.create_all(bind=engine)
+
 load_dotenv()
 
-#models.Base.metadata.create_all(bind=engine)
+
 
 
 app = FastAPI()
