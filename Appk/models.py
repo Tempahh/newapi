@@ -29,7 +29,7 @@ class User(Base):
                         nullable= False, server_default=text('now()'))
     
     
-class vote(Base):
+class Vote(Base):
     __tablename__ = "votes"
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"),primary_key=True)
     media_id = Column(Integer, ForeignKey("media.id", ondelete="CASCADE"), primary_key=True)

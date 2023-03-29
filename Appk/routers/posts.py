@@ -5,6 +5,7 @@ from database import get_db
 from typing import List
 from . import auth01
 from typing import Optional
+from sqlalchemy import func
 
 
 router = APIRouter(
@@ -12,10 +13,17 @@ router = APIRouter(
     tags= ['posts']
 )
 
-@router.get("/", response_model= List[schema.postty])
-def test_posts(db: Session = Depends(get_db), limit: int = 10, skip: int= 0, search: Optional[str]= ""):
-    posts = db.query(models.media).filter(models.media.title.contains(search)).limit(limit).offset(skip).all()
-    return posts
+@router.get("/", response_model= List[schema.postout])
+def test_posts(db: Session = Depends(get_db), limit: int = 10,
+               skip: int= 0, search: Optional[str]= ""):
+    posts = db.query(models.media).filter(
+        models.media.title.contains(search)).limit(limit).offset(skip).all()
+    
+    results = db.query(models.media, func.count(models.Vote.media_id).label("votes")).join(
+        models.Vote, models.Vote.media_id == models.media.id, isouter=True).group_by(models.media.id).all()
+    
+    
+    return results
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schema.postty)

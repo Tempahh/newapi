@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, conint
 from datetime import datetime
 from typing import Optional
 
@@ -38,6 +38,12 @@ class postty(PostBase):
     class Config:
         orm_mode = True
 
+class postout(PostBase):
+    post: postty
+    votes: int
+    
+    class Config:
+        orm_mode = True
         
 
 class usercreate(BaseModel):
@@ -54,3 +60,9 @@ class Token(BaseModel):
     
 class Tokeninfo(BaseModel):
     id: int
+
+
+class Vote(BaseModel):
+    media_id: int
+    dir: conint(le=1) # type: ignore
+    
