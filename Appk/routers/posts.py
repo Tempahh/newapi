@@ -16,11 +16,13 @@ router = APIRouter(
 @router.get("/", response_model= List[schema.postout])
 def test_posts(db: Session = Depends(get_db), limit: int = 10,
                skip: int= 0, search: Optional[str]= ""):
-    posts = db.query(models.media).filter(
-        models.media.title.contains(search)).limit(limit).offset(skip).all()
+    #posts = db.query(models.media).filter(models.media.title.contains(search)).limit(limit).offset(skip).all()
     
-    results = db.query(models.media, func.count(models.Vote.media_id).label("votes")).join(
-        models.Vote, models.Vote.media_id == models.media.id, isouter=True).group_by(models.media.id).all()
+    results = db.query(
+        models.media, func.count(models.Vote.media_id).label("votes")).join(
+        models.Vote, models.Vote.media_id == models.media.id, isouter=True).group_by(
+            models.media.id).filter(models.media.title.contains(search)).limit(
+                limit).offset(skip).all()
     
     
     return results
@@ -44,11 +46,14 @@ def create_posts(post: schema.PostCreate, db: Session = Depends(get_db), cur_use
 
 
 
-@router.get("/{id}")
+@router.get("/{id}", response_model= schema.postout)
 def get_post(id: int, db: Session = Depends(get_db),cur_user: int = Depends(auth01.get_user)):
     #cursor.execute("""SELECT * FROM media WHERE id = %s""", (str(id),))
     #post = cursor.fetchone()
-    post = db.query(models.media).filter(models.media.id == id).first() 
+    post = db.query(
+        models.media, func.count(models.Vote.media_id).label("votes")).join(
+        models.Vote, models.Vote.media_id == models.media.id, isouter=True).group_by(
+            models.media.id).filter(models.media.id == id).first() 
     
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
